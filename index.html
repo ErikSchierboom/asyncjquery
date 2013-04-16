@@ -22,12 +22,18 @@
 
     <button id="example1">Example 1</button>
 
-    <h2>Example 2: asynchronous scripts retrieval</h2>
+    <h2>Example 2: multiple asynchronous scripts retrieval</h2>
 
     <button id="example2">Example 2</button>
+
+    <h2>Example 3: custom asynchronous function</h2>
+
+    <button id="example3">Example 3</button>
     
     <script type="text/javascript">
-        // This example shows the most basic example of asynchronous methods
+        // This example shows the most basic example of asynchronous methods. It calls $.getJSON, which
+        // returns a Deferred object. Deferred objects have a done() method that is called when the Deferred
+        // object has finished.
         function example1() {
             $.getJSON('Data/example1.json').done(function (content1) {
                 alert('Data retrieved from example1.json: ' + content1);
@@ -47,10 +53,34 @@
             });
         };
 
+        // This example waits for two asynchronous methods to finish before calling the done method.
+        // We use the $.when method for this purposes, which is basically a simple way to wrap
+        // one or more Deferred objects into a single, new Deferred objects. This is especially convenient
+        // when we want to wait for several Deferred objects to finish their before doing something.
+        // In the example below, we use $.when to create a Deferred object which done method is only
+        // called when both $.getJSON calls are done
+        function example3() {
+
+            // Create the deferred object
+            var deferred = $.Deferred();
+
+            // Set the timeout for 1 seconds and when the timeout occurs, we call the
+            // resolve() method of the deferred object. The resolve() method changes the
+            // state of the deferred object to done, which means that it's done() method
+            // is then called.
+            setTimeout(deferred.resolve, 1000);
+
+            // We wait for the deferred object to get in the done state
+            $.when(deferred).done(function () {
+                alert('timeout passed for example 3');
+            });
+        };
+
         $(document).ready(function () {
             // Bind the event handlers to their corresponding functions
             $('#example1').on('click', example1);
             $('#example2').on('click', example2);
+            $('#example3').on('click', example3);
         });
     </script>
     
